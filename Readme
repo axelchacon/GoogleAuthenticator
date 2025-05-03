@@ -6,6 +6,8 @@ npm
 
 Crea un archivo .env en la raíz de tu proyecto con el siguiente contenido:
 
+JWT_SECRET=tu_clave_secreta
+
 ### 👥 Archivo users.js
 
 Este archivo simula una base de datos de usuarios en memoria. En un entorno de producción, deberías utilizar una base de datos real.
