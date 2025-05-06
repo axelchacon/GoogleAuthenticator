@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 350px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Iniciar Sesión</h2>
+        <div id="error-message" class="message error" style="display: none;"></div>
+        
+        <form id="login-form">
+            <div class="form-group">
+                <label for="usuario">Usuario:</label>
+                <input type="text" id="usuario" name="usuario" required>
+            </div>
+            <div class="form-group">
+                <label for="contrasena">Contraseña:</label>
+                <input type="password" id="contrasena" name="contrasena" required>
+            </div>
+            <button type="submit">Iniciar Sesión</button>
+        </form>
+        
+        <div class="register-link">
+            <p>¿No tienes una cuenta? <a href="registro.html">Regístrate aquí</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value;
+            const contrasena = document.getElementById('contrasena').value;
+            
+            // Llamada al servicio de login
+            fetch(`http://localhost:3000/api/login?usuario=${encodeURIComponent(usuario)}&contrasena=${encodeURIComponent(contrasena)}`, {
+                method: 'GET'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Usuario o contraseña incorrectos');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Si el login es exitoso, redirige a la página de autenticación 2FA
+                // Guardamos el usuario en sessionStorage para la verificación 2FA
+                sessionStorage.setItem('usuarioTemp', document.getElementById('usuario').value);
+                window.location.href = '2fa.html';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+</html>
