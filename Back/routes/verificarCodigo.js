@@ -1,7 +1,7 @@
-const express = require('express');
+import express from "express";
+import { verificarCodigo } from "../controllers/userController.js";
+
 const router = express.Router();
-const { verificarCodigo } = require('../controllers/userController');
+router.get("/", verificarCodigo);
 
-router.get('/', verificarCodigo);
-
-module.exports = router;
+export default router;

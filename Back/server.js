@@ -1,26 +1,32 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
+import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import registroRoute from "./routes/registro.js";
+import loginRoute from "./routes/login.js";
+import verificarCodigoRoute from "./routes/verificarCodigo.js";
+import pool from "./db.js";
+
+dotenv.config();
+
 const app = express();
-const registroRoute = require('./routes/registro');
-const loginRoute = require('./routes/login');
-const verificarCodigoRoute = require('./routes/verificarCodigo');
 
-const cors = require('cors');
-
+// Middleware
 app.use(cors());
-
-
 app.use(express.json());
 
+// Rutas
+app.use("/api/verificar-codigo", verificarCodigoRoute);
+app.use("/api/registro", registroRoute);
+app.use("/api/login", loginRoute);
 
-app.use('/api/verificar-codigo', verificarCodigoRoute);
-app.use('/api/registro', registroRoute);
-app.use('/api/login', loginRoute);
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
-    console.log('MongoDB conectado');
-    app.listen(process.env.PORT, () => console.log(`Servidor en puerto ${process.env.PORT}`));
-}).catch(err => console.error(err));
+// Verificar conexión a PostgreSQL
+pool.query("SELECT NOW()", (err) => {
+	if (err) {
+		console.error("Error al conectar con PostgreSQL:", err);
+	} else {
+		console.log("PostgreSQL conectado");
+		app.listen(process.env.PORT, () =>
+			console.log(`Servidor en puerto ${process.env.PORT}`)
+		);
+	}
+});
