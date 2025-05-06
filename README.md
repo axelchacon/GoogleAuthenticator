@@ -18,8 +18,13 @@ Una implementación de autenticación de dos factores basada en Node.js y MongoD
    ```bash
    cd GoogleAuthenticator
    ```
-
-3. Instala las dependencias:
+   
+3. Navega a la carpeta `Back`:
+   ```bash
+   cd Back
+   ```
+   
+4. Instala las dependencias:
    ```bash
    npm install
    ```
