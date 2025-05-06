@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 350px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .qr-container {
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+        .qr-image {
+            max-width: 200px;
+            margin: 0 auto;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Crear Nueva Cuenta</h2>
+        <div id="error-message" class="message error" style="display: none;"></div>
+        
+        <form id="registro-form">
+            <div class="form-group">
+                <label for="usuario">Usuario:</label>
+                <input type="text" id="usuario" name="usuario" required>
+            </div>
+            <div class="form-group">
+                <label for="contrasena">Contraseña:</label>
+                <input type="password" id="contrasena" name="contrasena" required>
+            </div>
+            <button type="submit">Registrar</button>
+        </form>
+        
+        <div id="qr-container" class="qr-container">
+            <h3>¡Usuario creado correctamente!</h3>
+            <p>Escanea este código QR con tu aplicación de autenticación:</p>
+            <img id="qr-code" class="qr-image" src="" alt="Código QR para autenticación">
+            <p>Una vez escaneado, <a href="login.html">inicia sesión aquí</a>.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registro-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value;
+            const contrasena = document.getElementById('contrasena').value;
+            
+            // Llamada al servicio para guardar usuario
+            fetch(`http://localhost:3000/api/registro?usuario=${encodeURIComponent(usuario)}&contrasena=${encodeURIComponent(contrasena)}`, {
+                method: 'GET'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al registrar usuario');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                // Mostrar el código QR
+                const qrUrl = URL.createObjectURL(blob);
+                document.getElementById('qr-code').src = qrUrl;
+                document.getElementById('qr-container').style.display = 'block';
+                document.getElementById('registro-form').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+</html>
